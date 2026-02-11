@@ -465,7 +465,7 @@ class TradeLingoBE_Tester:
         self.test_seed_demo_user()
         
         # Test authentication
-        user_data = self.test_demo_login()
+        user_data = self.test_specific_user_login()
         self.test_invalid_login()
         
         # Test curriculum endpoints
