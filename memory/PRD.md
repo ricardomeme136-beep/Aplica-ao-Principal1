@@ -49,3 +49,14 @@ Pull code from GitHub repository (https://github.com/ricardomeme136-beep/Aplica-
   - All Categories section
 - Color scheme: Dark theme (#0d1117) with colored gradient cards
 - Testing: 100% pass rate on all features
+
+### Pro Upgrade Screen Feature
+- [2026-01-25] Added Pro Upgrade screen for free users accessing Backtest
+- Features:
+  - Locked preview of backtest functionality
+  - 6 feature cards explaining Pro benefits
+  - $19/month pricing with "Most Popular" badge
+  - Working upgrade button that updates user subscription
+  - Success message and redirect to backtest after upgrade
+- Added skip button to onboarding flow for easier navigation
+- Testing: 100% pass rate on all features
