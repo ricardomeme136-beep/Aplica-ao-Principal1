@@ -3113,7 +3113,7 @@ const MainApp = ({ user: initialUser, onLogout }) => {
         )}
         {activeTab === 'backtest' && (
           user.subscription === 'pro' ? (
-            <RealMarketZone
+            <AdvancedBacktest
               user={user}
               onBack={() => setActiveTab('home')}
             />
