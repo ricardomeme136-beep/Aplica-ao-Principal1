@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    margin: 0;
+    font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+        "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #0A0A0A;
+    color: white;
+}
+
+code {
+    font-family:
+        source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+/* TradeLingo Dark Theme Variables */
+:root {
+    --tl-bg-primary: #0A0A0A;
+    --tl-bg-secondary: #1A1A1A;
+    --tl-bg-tertiary: #2A2A2A;
+    --tl-green: #58CC02;
+    --tl-green-dark: #4CAF00;
+    --tl-green-bg: #2D5016;
+    --tl-orange: #FF9600;
+    --tl-red: #FF4B4B;
+    --tl-red-bg: #4B1A1A;
+    --tl-gray-400: #9CA3AF;
+    --tl-gray-500: #6B7280;
+    --tl-gray-700: #374151;
+}
+
+@layer base {
+    :root {
+        --background: 0 0% 4%;
+        --foreground: 0 0% 98%;
+        --card: 0 0% 10%;
+        --card-foreground: 0 0% 98%;
+        --popover: 0 0% 10%;
+        --popover-foreground: 0 0% 98%;
+        --primary: 103 97% 41%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 0 0% 14.9%;
+        --secondary-foreground: 0 0% 98%;
+        --muted: 0 0% 14.9%;
+        --muted-foreground: 0 0% 63.9%;
+        --accent: 0 0% 14.9%;
+        --accent-foreground: 0 0% 98%;
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 0 0% 14.9%;
+        --input: 0 0% 14.9%;
+        --ring: 103 97% 41%;
+        --chart-1: 103 97% 41%;
+        --chart-2: 33 100% 50%;
+        --chart-3: 0 84% 60%;
+        --chart-4: 220 70% 50%;
+        --chart-5: 280 65% 60%;
+        --radius: 0.75rem;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
+}
+
+/* Hide browser default focus outlines */
+*:focus {
+    outline: none;
+}
+
+/* Custom focus ring */
+.focus-ring:focus {
+    box-shadow: 0 0 0 2px var(--tl-green);
+}
+
+/* Prevent text selection on buttons */
+button {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Smooth scroll */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Safe area for notched devices */
+.safe-top {
+    padding-top: env(safe-area-inset-top);
+}
+
+.safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+}
