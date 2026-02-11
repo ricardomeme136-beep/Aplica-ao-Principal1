@@ -283,6 +283,17 @@ export const OnboardingFlow = ({ onComplete, user }) => {
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
+        {/* Skip button */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={onComplete}
+            className="text-gray-500 hover:text-gray-300 text-sm px-4 py-2"
+            data-testid="skip-onboarding-btn"
+          >
+            Pular →
+          </button>
+        </div>
+        
         {/* Progress dots */}
         <div className="flex justify-center gap-2 mb-8">
           {steps.map((_, i) => (
