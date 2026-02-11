@@ -273,11 +273,22 @@ const HomeScreen = ({ user, onCategorySelect, onLegacyLessonSelect, onRealMarket
   const [progress, setProgress] = useState({});
   const [ads, setAds] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeView, setActiveView] = useState('skills'); // 'skills', 'curriculum', or 'legacy'
-  const [legacyLessons, setLegacyLessons] = useState([]);
-  const [userScores, setUserScores] = useState({ precision: 0, patience: 0, discipline: 0 });
-  const [currentSkillLevel, setCurrentSkillLevel] = useState(1);
-  const [skills, setSkills] = useState({});
+  const [userStats, setUserStats] = useState({ 
+    accuracy: 60, 
+    patience: 2, 
+    decisions: 10, 
+    streak: 0 
+  });
+  const [skillMastery, setSkillMastery] = useState([
+    { id: 'identify-trends', name: 'Identify Trends', progress: 0 },
+    { id: 'spot-consolidation', name: 'Spot Consolidation', progress: 0 },
+    { id: 'trend-vs-range', name: 'Trend vs Range Decision', progress: 0 },
+  ]);
+  const [recommendedSkill, setRecommendedSkill] = useState({
+    id: 'identify-trends',
+    name: 'Identify Trends',
+    description: 'Master this skill to unlock new decision-making abilities.'
+  });
 
   useEffect(() => {
     fetchData();
@@ -285,27 +296,30 @@ const HomeScreen = ({ user, onCategorySelect, onLegacyLessonSelect, onRealMarket
 
   const fetchData = async () => {
     try {
-      const [tiersRes, progressRes, adsRes, legacyRes] = await Promise.all([
+      const [tiersRes, progressRes, adsRes] = await Promise.all([
         axios.get(`${API}/curriculum/tiers`),
         axios.get(`${API}/curriculum/progress/${user.id}`),
-        axios.get(`${API}/ads/propfirms`),
-        axios.get(`${API}/lessons?user_id=${user.id}`)
+        axios.get(`${API}/ads/propfirms`)
       ]);
       setTiers(tiersRes.data);
       setProgress(progressRes.data);
       setAds(adsRes.data);
-      setLegacyLessons(legacyRes.data);
       
-      // Calculate scores from user data
-      setUserScores({
-        precision: Math.floor(user.xp / 10),
-        patience: Math.floor(user.xp / 15),
-        discipline: Math.floor(user.xp / 12)
+      // Calculate stats from user data
+      const totalProgress = Object.values(progressRes.data).reduce((acc, p) => acc + (p.total_completed || 0), 0);
+      setUserStats({
+        accuracy: Math.min(100, Math.max(0, 60 + Math.floor(user.xp / 50))),
+        patience: Math.floor(user.xp / 100) + 2,
+        decisions: totalProgress + 10,
+        streak: Math.floor(user.level / 2)
       });
       
-      // Set current skill level based on progress
-      const totalProgress = Object.values(progressRes.data).reduce((acc, p) => acc + (p.total_completed || 0), 0);
-      setCurrentSkillLevel(Math.min(6, Math.floor(totalProgress / 50) + 1));
+      // Update skill mastery based on progress
+      const updatedSkills = skillMastery.map(skill => ({
+        ...skill,
+        progress: Math.min(100, Math.floor(totalProgress / 3))
+      }));
+      setSkillMastery(updatedSkills);
       
     } catch (error) {
       toast.error('Failed to load curriculum');
@@ -325,7 +339,6 @@ const HomeScreen = ({ user, onCategorySelect, onLegacyLessonSelect, onRealMarket
   };
 
   const handleSkillSelect = (skill) => {
-    // Start a lesson from the skill map
     if (onStartLesson) {
       onStartLesson(skill);
     }
@@ -333,183 +346,173 @@ const HomeScreen = ({ user, onCategorySelect, onLegacyLessonSelect, onRealMarket
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-[#0A0A0A]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#58CC02]"></div>
+      <div className="flex items-center justify-center h-screen bg-[#0d1117]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="pb-24 bg-[#0A0A0A] min-h-screen" data-testid="home-screen">
-      {/* Header with Scores */}
-      <div className="bg-[#1A1A1A] p-4 sticky top-0 z-10">
-        <div className="flex items-center justify-between mb-4">
+    <div className="pb-24 bg-[#0d1117] min-h-screen" data-testid="home-screen">
+      {/* Header */}
+      <div className="px-5 pt-6 pb-4">
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-white">TradeLingo</h1>
-            <p className="text-sm text-gray-400">Nível {currentSkillLevel} • {user.rank}</p>
+            <p className="text-gray-400 text-sm">Welcome back,</p>
+            <h1 className="text-2xl font-bold text-white">{user.username}</h1>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="bg-[#FF9600] px-3 py-1 rounded-full flex items-center gap-1">
-              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-              <span className="text-white font-bold text-sm" data-testid="xp-badge">{user.xp} XP</span>
-            </div>
+          <div className="flex items-center gap-2 bg-gray-700/50 px-3 py-1.5 rounded-full">
+            <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" />
+            </svg>
+            <span className="text-white font-semibold text-sm" data-testid="xp-badge">{user.level}</span>
           </div>
-        </div>
-        
-        {/* Score Cards */}
-        <ScoreDisplay scores={userScores} />
-      </div>
-
-      {/* View Tabs */}
-      <div className="px-4 pt-4">
-        <div className="flex gap-2 bg-[#1A1A1A] rounded-xl p-1 mb-4">
-          <button
-            onClick={() => setActiveView('skills')}
-            className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
-              activeView === 'skills' ? 'bg-purple-600 text-white' : 'text-gray-400'
-            }`}
-          >
-            🗺️ Competências
-          </button>
-          <button
-            onClick={() => setActiveView('curriculum')}
-            className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
-              activeView === 'curriculum' ? 'bg-purple-600 text-white' : 'text-gray-400'
-            }`}
-          >
-            📚 Categorias
-          </button>
         </div>
       </div>
 
-      {/* Skills View (New System) */}
-      {activeView === 'skills' && (
-        <div className="px-4">
-          {/* Daily Challenge Card */}
-          <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-xl p-4 mb-6">
+      {/* Stats Cards Grid */}
+      <div className="px-5 grid grid-cols-2 gap-3 mb-6">
+        {/* Accuracy Card - Teal/Green */}
+        <div className="bg-gradient-to-br from-[#0d3d3d] to-[#0a2929] border border-teal-700/50 rounded-xl p-4" data-testid="accuracy-card">
+          <div className="flex items-center gap-2 mb-1">
+            <svg className="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" strokeWidth="2"/>
+              <circle cx="12" cy="12" r="6" strokeWidth="2"/>
+              <circle cx="12" cy="12" r="2" fill="currentColor"/>
+            </svg>
+            <span className="text-teal-400 text-xs font-medium uppercase tracking-wide">Accuracy</span>
+          </div>
+          <p className="text-white text-3xl font-bold">{userStats.accuracy}%</p>
+        </div>
+
+        {/* Patience Card - Gold/Amber */}
+        <div className="bg-gradient-to-br from-[#3d3519] to-[#292510] border border-amber-700/50 rounded-xl p-4" data-testid="patience-card">
+          <div className="flex items-center gap-2 mb-1">
+            <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" strokeWidth="2"/>
+              <path d="M12 6v6l4 2" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+            <span className="text-amber-400 text-xs font-medium uppercase tracking-wide">Patience</span>
+          </div>
+          <p className="text-white text-3xl font-bold">{userStats.patience}</p>
+        </div>
+
+        {/* Decisions Card - Blue */}
+        <div className="bg-gradient-to-br from-[#1a2744] to-[#111827] border border-blue-700/50 rounded-xl p-4" data-testid="decisions-card">
+          <div className="flex items-center gap-2 mb-1">
+            <svg className="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" />
+            </svg>
+            <span className="text-blue-400 text-xs font-medium uppercase tracking-wide">Decisions</span>
+          </div>
+          <p className="text-white text-3xl font-bold">{userStats.decisions}</p>
+        </div>
+
+        {/* Streak Card - Purple */}
+        <div className="bg-gradient-to-br from-[#2d1f4d] to-[#1a1333] border border-purple-700/50 rounded-xl p-4" data-testid="streak-card">
+          <div className="flex items-center gap-2 mb-1">
+            <svg className="w-5 h-5 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clipRule="evenodd" />
+            </svg>
+            <span className="text-purple-400 text-xs font-medium uppercase tracking-wide">Streak</span>
+          </div>
+          <p className="text-white text-3xl font-bold">{userStats.streak}</p>
+        </div>
+      </div>
+
+      {/* Recommended For You Section */}
+      <div className="px-5 mb-6">
+        <h2 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-3">Recommended For You</h2>
+        <button 
+          onClick={() => handleSkillSelect(recommendedSkill)}
+          className="w-full bg-gradient-to-r from-blue-600/30 to-blue-800/20 border border-blue-500/30 rounded-xl p-4 text-left hover:border-blue-500/50 transition-all"
+          data-testid="recommended-card"
+        >
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="text-3xl">🎯</div>
-              <div className="flex-1">
-                <h3 className="text-white font-bold">Desafio Diário</h3>
-                <p className="text-gray-400 text-sm">Identifica 3 tendências corretamente</p>
+              <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" strokeWidth="2"/>
+                  <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                </svg>
               </div>
-              <button 
-                onClick={() => handleSkillSelect({ id: 'direction', level: 1, name: 'Identificar Direção' })}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
-              >
-                Começar
-              </button>
+              <div>
+                <h3 className="text-white font-semibold">Continue Your Journey</h3>
+                <p className="text-gray-400 text-sm">{recommendedSkill.description}</p>
+                <p className="text-blue-400 text-sm mt-1">{recommendedSkill.name}</p>
+              </div>
             </div>
-            <div className="mt-3 h-2 bg-[#2A2A2A] rounded-full overflow-hidden">
-              <div className="h-full bg-purple-500 w-1/3"></div>
-            </div>
-            <div className="text-xs text-gray-500 mt-1">1/3 completo</div>
+            <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
           </div>
+        </button>
+      </div>
 
-          {/* Skill Map */}
-          <SkillMap 
-            skills={skills}
-            currentLevel={currentSkillLevel}
-            onSelectSkill={handleSkillSelect}
-          />
-
-          {/* Memory Anchors Section */}
-          <div className="mt-6">
-            <h3 className="text-white font-bold text-lg mb-3">📌 Regras para Lembrar</h3>
-            <div className="space-y-2">
-              {[
-                "Sem confirmação, não há trade.",
-                "Máximos mais altos = Alta. Mínimos mais baixos = Baixa.",
-                "O mercado move-se de liquidez para liquidez.",
-              ].map((anchor, i) => (
-                <div key={i} className="bg-[#1A1A1A] rounded-lg p-3 border-l-4 border-purple-500">
-                  <p className="text-gray-300 text-sm italic">"{anchor}"</p>
-                </div>
-              ))}
-            </div>
-          </div>
+      {/* Skill Mastery Section */}
+      <div className="px-5">
+        <h2 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-3">Skill Mastery</h2>
+        <div className="space-y-3">
+          {skillMastery.map((skill) => (
+            <button
+              key={skill.id}
+              onClick={() => handleSkillSelect(skill)}
+              className="w-full bg-[#161b22] border border-gray-800 rounded-xl p-4 text-left hover:border-gray-700 transition-all"
+              data-testid={`skill-${skill.id}`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-white font-medium">{skill.name}</span>
+                <span className="text-gray-500 text-sm">{skill.progress}%</span>
+              </div>
+              <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-blue-500 to-blue-400 rounded-full transition-all duration-500"
+                  style={{ width: `${skill.progress}%` }}
+                />
+              </div>
+            </button>
+          ))}
         </div>
-      )}
+      </div>
 
-      {/* Curriculum View (Original Categories) */}
-      {activeView === 'curriculum' && (
-        <div className="px-4 py-4">
+      {/* Categories Section */}
+      <div className="px-5 mt-8">
+        <h2 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-3">All Categories</h2>
+        <div className="space-y-3">
           {tiers.map((tier) => (
-          <div key={tier.id} className="mb-6">
-            {/* Tier Header */}
-            <div className="flex items-center gap-2 mb-3">
-              <span className={`text-xs font-bold px-2 py-1 rounded ${
-                tier.id === 'beginner' ? 'bg-green-600 text-white' :
-                tier.id === 'intermediate' ? 'bg-yellow-600 text-white' :
-                'bg-red-600 text-white'
-              }`}>
-                {tier.name.toUpperCase()}
-              </span>
-            </div>
-
-            {/* Category Cards */}
-            <div className="space-y-3">
+            <div key={tier.id}>
               {tier.categories.map((category) => {
                 const catProgress = getCategoryProgress(category.id);
-                const isStarted = catProgress.completed > 0;
-                
                 return (
                   <button
                     key={category.id}
                     onClick={() => onCategorySelect(category)}
-                    className="w-full bg-[#1A1A1A] rounded-xl p-4 text-left hover:bg-[#252525] transition-all transform hover:scale-[1.02] border border-transparent hover:border-[#58CC02]/30"
+                    className="w-full bg-[#161b22] border border-gray-800 rounded-xl p-4 text-left hover:border-gray-700 transition-all mb-3"
                     data-testid={`category-${category.id}`}
                   >
-                    <div className="flex items-start gap-4">
-                      {/* Icon */}
+                    <div className="flex items-center gap-4">
                       <div 
-                        className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl"
-                        style={{ backgroundColor: category.color + '20' }}
+                        className="w-12 h-12 rounded-xl flex items-center justify-center text-xl"
+                        style={{ backgroundColor: (category.color || '#3b82f6') + '20' }}
                       >
                         {category.icon}
                       </div>
-                      
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
+                      <div className="flex-1">
                         <div className="flex items-center justify-between">
-                          <h3 className="text-white font-semibold">{category.name}</h3>
-                          {isStarted && (
-                            <span className="text-xs text-[#58CC02] font-medium">
-                              {Math.round(catProgress.percentage)}%
-                            </span>
-                          )}
+                          <h3 className="text-white font-medium">{category.name}</h3>
+                          <span className="text-gray-500 text-sm">{Math.round(catProgress.percentage)}%</span>
                         </div>
-                        <p className="text-gray-400 text-sm mt-0.5 line-clamp-1">{category.description}</p>
-                        
-                        {/* Progress Bar */}
-                        <div className="mt-2 h-1.5 bg-[#2A2A2A] rounded-full overflow-hidden">
+                        <div className="mt-2 h-1.5 bg-gray-800 rounded-full overflow-hidden">
                           <div 
                             className="h-full rounded-full transition-all duration-500"
                             style={{ 
                               width: `${catProgress.percentage}%`,
-                              backgroundColor: category.color
+                              backgroundColor: category.color || '#3b82f6'
                             }}
                           />
                         </div>
-                        
-                        {/* Stats */}
-                        <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
-                          <span>10 Levels</span>
-                          <span>•</span>
-                          <span>100 Exercises</span>
-                          {isStarted && (
-                            <>
-                              <span>•</span>
-                              <span className="text-[#58CC02]">{catProgress.completed} done</span>
-                            </>
-                          )}
-                        </div>
                       </div>
-                      
-                      {/* Arrow */}
-                      <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </div>
@@ -517,40 +520,9 @@ const HomeScreen = ({ user, onCategorySelect, onLegacyLessonSelect, onRealMarket
                 );
               })}
             </div>
-          </div>
-        ))}
-        
-        {/* Prop Firm Ads (Free users only) */}
-        {user.subscription === 'free' && ads.length > 0 && (
-          <div className="pb-6">
-            <h3 className="text-white font-semibold mb-4">💰 Get Funded</h3>
-            <div className="space-y-3">
-              {ads.map(ad => (
-                <a
-                  key={ad.id}
-                  href={ad.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block bg-gradient-to-r from-[#1A1A1A] to-[#2A2A2A] p-4 rounded-xl border border-gray-700 hover:border-[#58CC02] transition-colors"
-                  data-testid={`ad-${ad.id}`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="text-white font-medium">{ad.name}</h4>
-                      <p className="text-sm text-gray-400">{ad.description}</p>
-                      <p className="text-xs text-[#58CC02] mt-1">{ad.discount}</p>
-                    </div>
-                    <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
+          ))}
         </div>
-      )}
+      </div>
     </div>
   );
 };
