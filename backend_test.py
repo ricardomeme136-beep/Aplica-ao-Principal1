@@ -71,12 +71,12 @@ class TradeLingoBE_Tester:
             self.log_test("Root Endpoint", False, f"Exception: {str(e)}")
             return False
 
-    def test_demo_login(self):
-        """Test login with demo credentials"""
+    def test_specific_user_login(self):
+        """Test login with specific test user credentials"""
         try:
             login_data = {
-                "email": "demo@tradelingo.com",
-                "password": "demo1234"
+                "email": "rsilva@test.com",
+                "password": "Test123456"
             }
             
             response = requests.post(
