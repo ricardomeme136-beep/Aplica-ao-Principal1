@@ -447,6 +447,82 @@ class TradeLingoBE_Tester:
             self.log_test("Real Market Advance Candle", False, f"Exception: {str(e)}")
             return False
 
+    def test_subscription_upgrade(self, user_data=None):
+        """Test subscription upgrade endpoint"""
+        try:
+            if not user_data:
+                self.log_test("Subscription Upgrade", False, "No user data provided")
+                return False
+            
+            upgrade_data = {
+                "user_id": user_data['id'],
+                "plan": "pro"
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/subscription/upgrade",
+                json=upgrade_data,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                required_fields = ['message', 'subscription']
+                missing_fields = [field for field in required_fields if field not in data]
+                
+                if missing_fields:
+                    self.log_test("Subscription Upgrade", False, f"Missing fields: {missing_fields}")
+                    return False
+                
+                if data.get('subscription') == 'pro':
+                    self.log_test("Subscription Upgrade", True)
+                    return True
+                else:
+                    self.log_test("Subscription Upgrade", False, f"Expected 'pro' subscription, got: {data.get('subscription')}")
+                    return False
+            else:
+                try:
+                    error_data = response.json()
+                    self.log_test("Subscription Upgrade", False, f"HTTP {response.status_code}: {error_data}", 200, response.status_code)
+                except:
+                    self.log_test("Subscription Upgrade", False, f"HTTP {response.status_code}: {response.text}", 200, response.status_code)
+                return False
+                
+        except Exception as e:
+            self.log_test("Subscription Upgrade", False, f"Exception: {str(e)}")
+            return False
+
+    def test_subscription_invalid_plan(self, user_data=None):
+        """Test subscription upgrade with invalid plan"""
+        try:
+            if not user_data:
+                self.log_test("Subscription Invalid Plan", False, "No user data provided")
+                return False
+            
+            upgrade_data = {
+                "user_id": user_data['id'],
+                "plan": "invalid_plan"
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/subscription/upgrade",
+                json=upgrade_data,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if response.status_code == 400:
+                self.log_test("Subscription Invalid Plan (400 Expected)", True)
+                return True
+            else:
+                self.log_test("Subscription Invalid Plan (400 Expected)", False, f"Expected 400, got {response.status_code}", 400, response.status_code)
+                return False
+                
+        except Exception as e:
+            self.log_test("Subscription Invalid Plan (400 Expected)", False, f"Exception: {str(e)}")
+            return False
+
     def run_all_tests(self):
         """Run all backend tests"""
         print(f"🚀 Starting TradeLingo Backend API Tests")
