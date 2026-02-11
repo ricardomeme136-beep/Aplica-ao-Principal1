@@ -104,13 +104,13 @@ class TradeLingoBE_Tester:
             else:
                 try:
                     error_data = response.json()
-                    self.log_test("Demo Login", False, f"HTTP {response.status_code}: {error_data}", 200, response.status_code)
+                    self.log_test("Specific User Login", False, f"HTTP {response.status_code}: {error_data}", 200, response.status_code)
                 except:
-                    self.log_test("Demo Login", False, f"HTTP {response.status_code}: {response.text}", 200, response.status_code)
+                    self.log_test("Specific User Login", False, f"HTTP {response.status_code}: {response.text}", 200, response.status_code)
                 return False
                 
         except Exception as e:
-            self.log_test("Demo Login", False, f"Exception: {str(e)}")
+            self.log_test("Specific User Login", False, f"Exception: {str(e)}")
             return False
 
     def test_invalid_login(self):
