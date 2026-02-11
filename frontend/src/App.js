@@ -108,21 +108,21 @@ const AuthScreen = ({ onLogin }) => {
   // Verification waiting screen
   if (showVerification) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center p-4" data-testid="verification-screen">
+      <div className="min-h-screen bg-[#0d1117] flex items-center justify-center p-4" data-testid="verification-screen">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-[#58CC02] mb-4">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-blue-600 mb-4">
               <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
             <h1 className="text-3xl font-bold text-white">Check Your Email</h1>
             <p className="text-gray-400 mt-2">We've sent a verification link to</p>
-            <p className="text-[#58CC02] font-semibold mt-1">{pendingEmail}</p>
+            <p className="text-blue-400 font-semibold mt-1">{pendingEmail}</p>
           </div>
 
-          <div className="bg-[#1A1A1A] rounded-2xl p-6">
-            <div className="bg-[#0A0A0A] rounded-lg p-4 mb-6">
+          <div className="bg-[#161b22] border border-gray-800 rounded-2xl p-6">
+            <div className="bg-[#0d1117] rounded-lg p-4 mb-6">
               <p className="text-gray-300 text-sm">
                 Click the verification link in the email to confirm your account. 
                 The link expires in 24 hours.
@@ -134,7 +134,7 @@ const AuthScreen = ({ onLogin }) => {
               <button
                 onClick={handleResendVerification}
                 disabled={resendLoading}
-                className="w-full border border-[#58CC02] text-[#58CC02] hover:bg-[#58CC02] hover:text-white font-bold py-3 rounded-lg transition-colors disabled:opacity-50"
+                className="w-full border border-blue-500 text-blue-400 hover:bg-blue-600 hover:text-white font-bold py-3 rounded-lg transition-colors disabled:opacity-50"
                 data-testid="resend-verification-btn"
               >
                 {resendLoading ? 'Sending...' : 'Resend Verification Email'}
@@ -157,11 +157,11 @@ const AuthScreen = ({ onLogin }) => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center p-4" data-testid="auth-screen">
+    <div className="min-h-screen bg-[#0d1117] flex items-center justify-center p-4" data-testid="auth-screen">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-[#58CC02] mb-4">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-teal-500 to-blue-600 mb-4">
             <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
@@ -171,12 +171,12 @@ const AuthScreen = ({ onLogin }) => {
         </div>
 
         {/* Auth Form */}
-        <div className="bg-[#1A1A1A] rounded-2xl p-6">
-          <div className="flex mb-6">
+        <div className="bg-[#161b22] border border-gray-800 rounded-2xl p-6">
+          <div className="flex mb-6 bg-[#0d1117] rounded-lg p-1">
             <button
               onClick={() => setIsLogin(true)}
               className={`flex-1 py-2 text-center font-semibold rounded-lg transition-colors ${
-                isLogin ? 'bg-[#58CC02] text-white' : 'text-gray-400 hover:text-white'
+                isLogin ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'
               }`}
               data-testid="login-tab"
             >
@@ -185,7 +185,7 @@ const AuthScreen = ({ onLogin }) => {
             <button
               onClick={() => setIsLogin(false)}
               className={`flex-1 py-2 text-center font-semibold rounded-lg transition-colors ${
-                !isLogin ? 'bg-[#58CC02] text-white' : 'text-gray-400 hover:text-white'
+                !isLogin ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'
               }`}
               data-testid="register-tab"
             >
@@ -201,7 +201,7 @@ const AuthScreen = ({ onLogin }) => {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full bg-[#0A0A0A] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#58CC02]"
+                  className="w-full bg-[#0d1117] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500"
                   placeholder="Your username"
                   required={!isLogin}
                   data-testid="username-input"
@@ -214,7 +214,7 @@ const AuthScreen = ({ onLogin }) => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-[#0A0A0A] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#58CC02]"
+                className="w-full bg-[#0d1117] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500"
                 placeholder="your@email.com"
                 required
                 data-testid="email-input"
@@ -227,7 +227,7 @@ const AuthScreen = ({ onLogin }) => {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-[#0A0A0A] border border-gray-700 rounded-lg px-4 py-3 pr-12 text-white focus:outline-none focus:border-[#58CC02]"
+                  className="w-full bg-[#0d1117] border border-gray-700 rounded-lg px-4 py-3 pr-12 text-white focus:outline-none focus:border-blue-500"
                   placeholder="••••••••"
                   required
                   data-testid="password-input"
@@ -254,7 +254,7 @@ const AuthScreen = ({ onLogin }) => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#58CC02] hover:bg-[#4CAF00] text-white font-bold py-3 rounded-lg transition-colors disabled:opacity-50"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors disabled:opacity-50"
               data-testid="auth-submit-btn"
             >
               {loading ? 'Loading...' : isLogin ? 'Login' : 'Create Account'}
