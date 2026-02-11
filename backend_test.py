@@ -566,6 +566,12 @@ class TradeLingoBE_Tester:
         if session_data:
             self.test_real_market_advance_candle(session_data.get('session_id'))
         
+        # Test subscription endpoints
+        print("\n💎 Testing Subscription Endpoints...")
+        if user_data:
+            self.test_subscription_upgrade(user_data)
+            self.test_subscription_invalid_plan(user_data)
+        
         return self.generate_report()
 
     def generate_report(self):
