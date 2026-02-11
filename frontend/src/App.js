@@ -2723,7 +2723,7 @@ const BottomNav = ({ activeTab, setActiveTab }) => {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-[#1A1A1A] border-t border-gray-800 px-2 py-2 z-40">
+    <div className="fixed bottom-0 left-0 right-0 bg-[#161b22] border-t border-gray-800 px-2 py-2 z-40">
       <div className="flex justify-around">
         {tabs.map(tab => (
           <button
@@ -2731,7 +2731,7 @@ const BottomNav = ({ activeTab, setActiveTab }) => {
             onClick={() => setActiveTab(tab.id)}
             className={`flex flex-col items-center py-2 px-3 rounded-lg transition-colors ${
               activeTab === tab.id 
-                ? tab.id === 'backtest' ? 'text-purple-400' : 'text-[#58CC02]' 
+                ? tab.id === 'backtest' ? 'text-purple-400' : 'text-blue-400' 
                 : 'text-gray-500 hover:text-gray-300'
             }`}
             data-testid={`nav-${tab.id}`}
@@ -2740,6 +2740,169 @@ const BottomNav = ({ activeTab, setActiveTab }) => {
             <span className="text-[10px] mt-1 font-medium">{tab.label}</span>
           </button>
         ))}
+      </div>
+    </div>
+  );
+};
+
+// ==================== PRO UPGRADE SCREEN ====================
+
+const ProUpgradeScreen = ({ user, onUpgrade, onBack }) => {
+  const [loading, setLoading] = useState(false);
+
+  const handleUpgrade = async () => {
+    setLoading(true);
+    try {
+      await axios.post(`${API}/subscription/upgrade`, {
+        user_id: user.id,
+        plan: 'pro'
+      });
+      toast.success('Upgraded to Pro! Welcome to the elite.');
+      onUpgrade();
+    } catch (error) {
+      toast.error('Failed to upgrade. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const features = [
+    { icon: '📊', title: 'Real Market Replay', desc: 'Practice with actual historical market data' },
+    { icon: '🎯', title: 'Advanced Analysis', desc: 'Get AI-powered insights on your trading decisions' },
+    { icon: '📈', title: 'Multiple Assets', desc: 'Trade ES, NQ, Gold, Bitcoin and more' },
+    { icon: '⚡', title: 'Unlimited Sessions', desc: 'No limits on practice sessions' },
+    { icon: '🏆', title: 'Leaderboards', desc: 'Compete with traders worldwide' },
+    { icon: '📱', title: 'Priority Support', desc: '24/7 dedicated support team' },
+  ];
+
+  return (
+    <div className="min-h-screen bg-[#0d1117] pb-24" data-testid="pro-upgrade-screen">
+      {/* Header */}
+      <div className="bg-gradient-to-b from-purple-900/30 to-transparent px-5 pt-6 pb-8">
+        <button 
+          onClick={onBack} 
+          className="text-gray-400 hover:text-white mb-4"
+          data-testid="upgrade-back-btn"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-700 mb-4">
+            <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-2">Upgrade to Pro</h1>
+          <p className="text-gray-400">Unlock the full power of TradeLingo</p>
+        </div>
+      </div>
+
+      {/* Backtest Preview - Locked */}
+      <div className="px-5 mb-6">
+        <div className="relative bg-[#161b22] border border-gray-800 rounded-xl p-4 overflow-hidden">
+          {/* Blurred background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-sm"></div>
+          
+          {/* Content preview */}
+          <div className="relative opacity-50">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-12 h-12 bg-purple-600/30 rounded-xl flex items-center justify-center">
+                <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-white font-semibold">Real Market Backtest</h3>
+                <p className="text-gray-500 text-sm">ES Futures - 5min</p>
+              </div>
+            </div>
+            <div className="h-32 bg-[#0d1117] rounded-lg flex items-center justify-center">
+              <div className="flex gap-1">
+                {[40, 60, 45, 70, 55, 80, 65, 90, 75, 85].map((h, i) => (
+                  <div key={i} className="w-4 bg-green-500/30 rounded-t" style={{ height: `${h}%` }}></div>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          {/* Lock overlay */}
+          <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-xl">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-purple-600/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <p className="text-white font-semibold">Pro Feature</p>
+              <p className="text-gray-400 text-sm">Upgrade to access</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Features Grid */}
+      <div className="px-5 mb-6">
+        <h2 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-3">What You Get</h2>
+        <div className="grid grid-cols-2 gap-3">
+          {features.map((feature, i) => (
+            <div key={i} className="bg-[#161b22] border border-gray-800 rounded-xl p-4">
+              <span className="text-2xl mb-2 block">{feature.icon}</span>
+              <h3 className="text-white font-semibold text-sm mb-1">{feature.title}</h3>
+              <p className="text-gray-500 text-xs">{feature.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Pricing */}
+      <div className="px-5 mb-6">
+        <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30 rounded-xl p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-gray-400 text-sm">Pro Plan</p>
+              <div className="flex items-baseline gap-1">
+                <span className="text-4xl font-bold text-white">$19</span>
+                <span className="text-gray-400">/month</span>
+              </div>
+            </div>
+            <div className="bg-purple-500/20 px-3 py-1 rounded-full">
+              <span className="text-purple-400 text-sm font-medium">Most Popular</span>
+            </div>
+          </div>
+          
+          <ul className="space-y-2 mb-4">
+            {['All Backtest features', 'Unlimited practice sessions', 'Advanced analytics', 'Priority support'].map((item, i) => (
+              <li key={i} className="flex items-center gap-2 text-gray-300 text-sm">
+                <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                {item}
+              </li>
+            ))}
+          </ul>
+
+          <button
+            onClick={handleUpgrade}
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-4 rounded-xl transition-all disabled:opacity-50"
+            data-testid="upgrade-pro-btn"
+          >
+            {loading ? 'Processing...' : 'Upgrade to Pro'}
+          </button>
+        </div>
+      </div>
+
+      {/* Guarantee */}
+      <div className="px-5 text-center">
+        <div className="flex items-center justify-center gap-2 text-gray-500 text-sm">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <span>7-day money-back guarantee</span>
+        </div>
       </div>
     </div>
   );
