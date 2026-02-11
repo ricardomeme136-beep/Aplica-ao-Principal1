@@ -3100,7 +3100,7 @@ const MainApp = ({ user: initialUser, onLogout }) => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A]" data-testid="main-app">
+    <div className="min-h-screen bg-[#0d1117]" data-testid="main-app">
       <div className="max-w-lg mx-auto">
         {activeTab === 'home' && (
           <HomeScreen 
@@ -3111,10 +3111,21 @@ const MainApp = ({ user: initialUser, onLogout }) => {
           />
         )}
         {activeTab === 'backtest' && (
-          <RealMarketZone
-            user={user}
-            onBack={() => setActiveTab('home')}
-          />
+          user.subscription === 'pro' ? (
+            <RealMarketZone
+              user={user}
+              onBack={() => setActiveTab('home')}
+            />
+          ) : (
+            <ProUpgradeScreen
+              user={user}
+              onUpgrade={() => {
+                refreshUser();
+                setActiveTab('backtest');
+              }}
+              onBack={() => setActiveTab('home')}
+            />
+          )
         )}
         {activeTab === 'journal' && <JournalScreen user={user} />}
         {activeTab === 'profile' && (
