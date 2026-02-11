@@ -5,6 +5,7 @@ import axios from "axios";
 import { Toaster, toast } from 'sonner';
 import InteractiveExerciseScreen from './components/InteractiveExerciseScreen';
 import RealMarketZone from './components/RealMarketZone';
+import AdvancedBacktest from './components/AdvancedBacktest';
 import { OnboardingFlow, LessonCycle, ScoreDisplay, SkillMap, LESSON_DATA } from './components/LearningSystem';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
