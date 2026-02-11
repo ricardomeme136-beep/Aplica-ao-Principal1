@@ -95,11 +95,11 @@ class TradeLingoBE_Tester:
                     self.log_test("Demo Login", False, f"Missing fields: {missing_fields}")
                     return False
                 
-                if data.get('email') == 'demo@tradelingo.com':
-                    self.log_test("Demo Login", True)
+                if data.get('email') == 'rsilva@test.com':
+                    self.log_test("Specific User Login", True)
                     return data
                 else:
-                    self.log_test("Demo Login", False, f"Wrong email returned: {data.get('email')}")
+                    self.log_test("Specific User Login", False, f"Wrong email returned: {data.get('email')}")
                     return False
             else:
                 try:
