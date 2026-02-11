@@ -6,7 +6,7 @@ import json
 from datetime import datetime
 
 class TradeLingoBE_Tester:
-    def __init__(self, base_url="https://main-app-preview.preview.emergentagent.com"):
+    def __init__(self, base_url="https://aplicacao-principal.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.token = None
