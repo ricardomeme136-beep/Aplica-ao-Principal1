@@ -36,3 +36,16 @@ Pull code from GitHub repository (https://github.com/ricardomeme136-beep/Aplica-
 
 ## Next Tasks
 - Await user feedback for improvements
+
+## Updates - 2026-01-25
+
+### Home Screen Redesign
+- [2026-01-25] Redesigned home screen to match new design specifications
+- New layout includes:
+  - Welcome header with username and level badge
+  - 4 stats cards (Accuracy, Patience, Decisions, Streak)
+  - Recommended For You section
+  - Skill Mastery section with progress bars
+  - All Categories section
+- Color scheme: Dark theme (#0d1117) with colored gradient cards
+- Testing: 100% pass rate on all features
